@@ -1,6 +1,17 @@
 <% provide(:title, 'All Users') %>
-<h1>ユーザー一覧</h1>
+<% if params[:search].blank? %>
+  <h1>ユーザー一覧</h1>
+<% else %>
+  <h1>検証結果</h1>
+<% end %>
 
+<div class="col-md-offset-8">
+  <p>ユーザー名検索</p>
+  <%= form_tag(users_path, method: :get) do %>
+    <%= text_field_tag :search %>
+    <%= submit_tag "検索", :name => nil, class: "btn btn-primary" %>
+  <% end %>
+</div> 
 <div class="col-md-10 col-md-offset-1">
   <%= will_paginate %>
   <table class="table table-condensed table-hover" id="table-users">
@@ -15,7 +26,7 @@
         <th></th>
       </tr>
     </thead>
-    
+
     <% @users.each do |user| %>
       <tr>
         <td>
@@ -26,14 +37,13 @@
           <% end %>
         </td>
         <td class="center"><%= user.department.present? ? user.department : "未所属" %></td>
-          <% if current_user.admin? %>
-            <td class="center"><%= format_basic_info(user.basic_time) %></td>
-            <td class="center"><%= format_basic_info(user.work_time) %></td>
-          <% end %>
+        <% if current_user.admin? %>
+          <td class="center"><%= format_basic_info(user.basic_time) %></td>
+          <td class="center"><%= format_basic_info(user.work_time) %></td>
+        <% end %>
         <td class="center">
           <% if current_user.admin? && !current_user?(user) %>
             <%= link_to "基本情報編集", edit_basic_info_user_path(user), remote: true, class: "btn btn-success" %>
-            
             <%= link_to "削除", user, method: :delete,
                 data: { confirm: "削除してよろしいですか？" }, class: "btn btn-danger" %>
           <% end %>
