@@ -65,6 +65,20 @@ class UsersController < ApplicationController
     end
     redirect_to users_url
   end
+  
+  def import
+    if params[:file].blank?
+      flash[:danger] = "読み込むCSVを選択してください"
+      
+    elsif File.extname(params[:file].original_filename) != ".csv"
+      flash[:danger] = "CSVファイルのみ読み込み可能です。"
+      
+    elsif User.import(params[:file])
+      flash[:success] = "ユーザーをインポートしました。"
+      
+    end
+    redirect_to users_url
+  end
 
   private
 
