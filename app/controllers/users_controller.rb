@@ -44,8 +44,17 @@ class UsersController < ApplicationController
       flash[:success] = "ユーザー情報を更新しました。"
       redirect_to users_url
     else
-      render :index      
+      flash[:danger] = "#{@user.name}の更新は失敗しました。<br>" + @user.errors.full_messages.join("<br>")
+      redirect_to users_url
     end
+  end
+  
+  def working_list
+    # 条件に合致する勤怠データを絞ってからuserと関連づける。
+    @in_attendances = Attendance.where(worked_on: Date.current)
+                         .where(finished_at: nil)
+                         .where.not(started_at: nil)
+                         .includes(:user)
   end
 
   def destroy
